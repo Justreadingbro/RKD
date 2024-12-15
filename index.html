@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECG Alerts Receiver</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .alert {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Received ECG Alerts</h1>
+  <div id="alerts"></div>
+
+  <script>
+    // Simulated server-side storage for received alerts
+    let alerts = [];
+
+    // Function to add a new alert to the list and display it
+    function addAlert(message, latitude, longitude) {
+      const alert = { message, latitude, longitude, timestamp: new Date().toLocaleString() };
+      alerts.push(alert);
+      displayAlerts();
+    }
+
+    // Function to display all alerts
+    function displayAlerts() {
+      const alertsContainer = document.getElementById('alerts');
+      alertsContainer.innerHTML = ''; // Clear previous alerts
+
+      alerts.forEach(alert => {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert';
+        alertDiv.innerHTML = `
+          <p><strong>Message:</strong> ${alert.message}</p>
+          <p><strong>Location:</strong> ${alert.latitude}, ${alert.longitude}</p>
+          <p><strong>Time:</strong> ${alert.timestamp}</p>
+          <a href="https://www.openstreetmap.org/?mlat=${alert.latitude}&mlon=${alert.longitude}#map=18/${alert.latitude}/${alert.longitude}" target="_blank">View on Map</a>
+        `;
+        alertsContainer.appendChild(alertDiv);
+      });
+    }
+
+    // Set up a server to receive alerts (for demonstration purposes, we use a simulated function)
+    async function receiveAlert() {
+      // Simulated receiving an alert message from the first website
+      window.addEventListener('message', event => {
+        if (event.origin === 'https://justreadingbro.github.io') {
+          const data = event.data;
+          if (data && data.message && data.latitude && data.longitude) {
+            addAlert(data.message, data.latitude, data.longitude);
+          }
+        }
+      });
+    }
+
+    // Start receiving alerts
+    receiveAlert();
+  </script>
+</body>
+</html>
